@@ -2,12 +2,12 @@ package philosophers.chairs;
 
 import philosophers.Fork;
 import philosophers.Hand;
-import philosophers.Room;
+import philosophers.Philosopher;
 
 public class Chair {
     private Fork left;
     private Fork right;
-    private Room.Philosopher philosopher;
+    private Philosopher philosopher;
 
     public Chair(Fork left, Fork right) {
         this.left = left;
@@ -23,7 +23,7 @@ public class Chair {
 
     // this method is syncronised to avoid someone else occupying the chair between our philosoph checking if
     //  it is free and siting down on it
-    public synchronized boolean trySitOn(Room.Philosopher philosopher) {
+    public synchronized boolean trySitOn(Philosopher philosopher) {
         if (this.isFree()) {
             this.sitOn(philosopher);
             return true;
@@ -32,7 +32,7 @@ public class Chair {
     }
     // regular chairs are protected from multiple occuppants by not exposing the sitOn method, only through the syncronised trySitOn.
     //  This is enough here, as philosophers don't need to wait for a regular chair, they only sit on them when they are free
-    protected void sitOn(Room.Philosopher philosopher) {
+    protected void sitOn(Philosopher philosopher) {
         if(this.philosopher != null) throw new IllegalStateException("Chair not empty!");
         this.philosopher = philosopher;
         philosopher.setChair(this);
@@ -40,7 +40,7 @@ public class Chair {
 
     public boolean isFree() {return philosopher == null;}
 
-    public void standUpFrom(Room.Philosopher philosopher) {
+    public void standUpFrom(Philosopher philosopher) {
         if(philosopher!=this.philosopher) throw new IllegalArgumentException("Only someone sitting on a chair can stand up from it!");
 
         this.philosopher = null;
