@@ -10,7 +10,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.stream.Collectors;
 
 // the room class provides chairs, forks, and all shared resources as random objact and logger
 // it also manages threads
@@ -136,6 +135,7 @@ public class Room {
                 int i = (chairs.indexOf(chair) + 1) % n;
                 standUpIfneeded();
                 waitRandom();
+                // Philosopher goes around the table and tries to sit on each chair until they find an empty one.
                 // This lock isn't strictly necessary here as
                 //      - existence of an empty chair is guaranteed (our philosopher is standing)
                 //      - chairs are protected from multiple occupancy by only being occupied by the trySitOn method
@@ -144,10 +144,9 @@ public class Room {
                 //          and it is always occupied by someone else just before we arrive,
                 //          we'll still find an empty chair in <= n rounds, after all other philosopers have moved
                 //          to occupy a chair before us and have started waiting before their next decision
-                // Only a much higher number or a close to zero waiting time of philosophers would really need this lock
-                //  to avoid a philosopher continously running around the table and not finding an empty chair
+                // Only a much higher number of philosophers or a close to zero waiting time would make this lock
+                //  necessary, to avoid a philosopher continously running around the table and not finding an empty chair
                 moveChairLock.lock();
-                // Philosopher goes around the table and tries to sit on each chair until they find an empty one.
                 try {
                     while (!chairs.get(i).trySitOn(this)) {
                         i = ++i % n;
