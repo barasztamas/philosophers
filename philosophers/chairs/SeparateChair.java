@@ -23,8 +23,8 @@ public class SeparateChair extends Chair {
     }
 
     @Override
-    public void standUpFrom(Philosopher philosopher) {
-        super.standUpFrom(philosopher);
+    public void standUp() {
+        super.standUp();
         lock.unlock();
     }
 }

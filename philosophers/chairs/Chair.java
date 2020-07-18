@@ -40,9 +40,7 @@ public class Chair {
 
     public boolean isFree() {return philosopher == null;}
 
-    public void standUpFrom(Philosopher philosopher) {
-        if(philosopher!=this.philosopher) throw new IllegalArgumentException("Only someone sitting on a chair can stand up from it!");
-
+    public void standUp() {
         this.philosopher = null;
         philosopher.setChair(null);
     }

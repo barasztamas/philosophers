@@ -2,6 +2,7 @@ package philosophers;
 
 import philosophers.chairs.Chair;
 
+import java.util.Random;
 import java.util.SortedSet;
 
 public class Philosopher implements Runnable {
@@ -10,9 +11,18 @@ public class Philosopher implements Runnable {
     private Chair chair;
     private int nrOfTimesEaten = 0;
     private Thread thread;
+    private static Random random = new Random();
 
     public Philosopher(Room room) {
         this.room = room;
+    }
+
+    public static void waitRandom() {
+        try {
+            Thread.sleep(random.nextInt(500)+500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -21,8 +31,8 @@ public class Philosopher implements Runnable {
         room.logEvent("enters room", this);
         sitOnSeparateChair();
         while (nrOfTimesEaten < room.size()) {
-            room.waitRandom();
-            switch (room.randomInt(3)) {
+            waitRandom();
+            switch (random.nextInt(3)) {
                 case 0 :
                     room.logEvent("decides to eat", this);
                     eat();
@@ -42,18 +52,18 @@ public class Philosopher implements Runnable {
     }
     private void sitOnSeparateChair() {
         standUpIfneeded();
-        room.waitRandom();
+        waitRandom();
         room.getSeparateChair().sitOn(this);
         try {
             room.logEvent("sits on separate chair", this);
-            room.waitRandom();
+            waitRandom();
             setHandPreference();
-            room.waitRandom();
+            waitRandom();
             // we would want to log just before we stand up,
             // but unlocking locked resource takes preference in the finally section
             room.logEvent("leaves separate chair", this);
         } finally {
-            room.getSeparateChair().standUpFrom(this);
+            room.getSeparateChair().standUp();
         }
         sitOnChair();
     }
@@ -62,7 +72,7 @@ public class Philosopher implements Runnable {
         if (room.getPhilosophersSitingAtTable() < room.size()) {
             int i = (room.chairIndex(chair) + 1) % room.size();
             standUpIfneeded();
-            room.waitRandom();
+            waitRandom();
             // Philosopher goes around the table and tries to sit on each chair until they find an empty one.
             // This lock isn't strictly necessary here as
             //      - existence of an empty chair is guaranteed (our philosopher is standing)
@@ -89,11 +99,11 @@ public class Philosopher implements Runnable {
     }
 
     private void eat() {
-        room.waitRandom();
+        waitRandom();
         synchronized (chair.getFork(preferredHand)) {
-            room.waitRandom();
+            waitRandom();
             synchronized (chair.getFork(Hand.otherHand(preferredHand))) {
-                room.waitRandom();
+                waitRandom();
                 nrOfTimesEaten++;
                 room.logMeal(this);
             }
@@ -102,9 +112,9 @@ public class Philosopher implements Runnable {
 
     private void standUpIfneeded() {
         if (chair!=null){
-            room.waitRandom();
+            waitRandom();
             room.logEvent("leaves chair nr "+ room.chairIndex(chair), this);
-            chair.standUpFrom(this);
+            chair.standUp();
         }
     }
 

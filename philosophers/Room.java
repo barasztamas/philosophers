@@ -22,7 +22,6 @@ public class Room {
     private ReentrantLock moveChairLock = new ReentrantLock(true);
     private long startTime;
     private List<String> meals = Collections.synchronizedList(new ArrayList<>());
-    private static Random random = new Random();
     private Logger logger;
 
     public static void main(String[] args) {
@@ -58,7 +57,7 @@ public class Room {
             }
         }
         System.out.println("All philosophers left, main process returning");
-        waitRandom();
+        Philosopher.waitRandom();
         logMessage("Main process listing all meals");
         for (String meal : meals) {
             System.out.println(meal);
@@ -73,17 +72,6 @@ public class Room {
     void logMeal(Philosopher philosopher){
         meals.add(philosopher.name()+" ate meal at "+(System.currentTimeMillis()- startTime));
         logEvent("eats meal", philosopher);
-    }
-
-    // random tools
-    public int randomInt(int bound) { return random.nextInt(bound); }
-
-    public void waitRandom() {
-        try {
-            Thread.sleep(random.nextInt(500)+500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     // getters (and setters)
